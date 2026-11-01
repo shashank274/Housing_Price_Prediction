@@ -1,82 +1,61 @@
 # Housing Price Prediction
 
-This project predicts house prices using features like location, housing attributes, and proximity to the ocean. It includes data exploration, preprocessing, feature engineering, and model training.
+Predicts the median house value of a California district from its location, age, size and distance to the ocean. A tuned **Random Forest explains about 83% of the variation in prices**, compared with 68% for a simple linear regression.
+
+Built with Python, pandas, seaborn and scikit-learn in a Jupyter notebook.
+
+## The data
+
+The California housing dataset (`housing.csv`), with **20,640 districts** from the 1990 census. Each row has:
+
+- `longitude`, `latitude`
+- `housing_median_age`
+- `total_rooms`, `total_bedrooms`, `population`, `households`
+- `median_income`
+- `ocean_proximity` (for example `<1H OCEAN`, `INLAND`, `NEAR BAY`)
+- `median_house_value`: the value to predict
+
+Rows with missing values are dropped first.
+
+## What the notebook does
+
+1. **Splits** the data 80/20 into training and test sets before looking at it, so the test set stays unseen.
+2. **Explores** the training data with histograms, a correlation heatmap and a map-style scatter plot of house values by latitude and longitude, which shows prices rising near the coast.
+3. **Fixes skewed columns.** `total_rooms`, `total_bedrooms`, `population` and `households` are log-transformed so they look closer to a normal distribution.
+4. **Encodes** `ocean_proximity` as one-hot columns.
+5. **Adds two features:**
+   - `bedroom_ratio` = bedrooms ÷ rooms
+   - `household_rooms` = rooms ÷ households
+6. **Trains and compares two models** on the same features:
+   - Linear Regression
+   - Random Forest, then tuned with `GridSearchCV` (5-fold cross-validation over number of trees, minimum split size and maximum depth)
+
+The test set goes through exactly the same steps (log transform, encoding and new features) before scoring.
+
+## Results (on the test set)
+
+| Model | R² | Mean absolute error |
+| --- | --- | --- |
+| Linear Regression | 0.68 | about $47,100 |
+| Random Forest | **0.83** | **about $31,600** |
+
+Tuning with grid search picked 300 trees and a minimum split size of 4, and scored about the same as the default Random Forest (R² 0.83).
+
+## Files
+
+- `model.ipynb`: the full analysis
+- `report.html`: an automated exploratory report (Sweetviz) of the California housing data, with a summary of every column
+
+## Run it
+
+```bash
+git clone https://github.com/shashank274/Housing_Price_Prediction.git
+cd Housing_Price_Prediction
+pip install -r requirements.txt
+```
+
+Download `housing.csv` (the Kaggle "California Housing Prices" dataset), put it in this folder, then open `model.ipynb` in Jupyter.
 
 ---
 
-## Project Overview
-- Predicts median house value based on:
-  - Location data (latitude, longitude)
-  - Housing attributes (total rooms, bedrooms, population, households)
-  - Proximity to the ocean
-
----
-
-## Technologies Used
-- **Programming Language:** Python
-- **Libraries:**
-  - `pandas`, `numpy` for data manipulation
-  - `matplotlib`, `seaborn` for visualization
-  - `scikit-learn` for machine learning
-
----
-
-## Dataset
-Key features include:
-- `median_house_value`: Target variable (house price)
-- `ocean_proximity`: Categorical feature
-- `latitude`, `longitude`: Geographical data
-- `total_rooms`, `total_bedrooms`, `population`, `households`: Housing attributes
-
----
-
-## Workflow
-
-### 1. Data Loading and Splitting
-- Split dataset into training (80%) and testing (20%) sets.
-
-### 2. Exploratory Data Analysis (EDA)
-- Plotted histograms, heatmaps, and scatterplots to analyze trends.
-
-### 3. Data Preprocessing
-- Applied log transformations to reduce skewness.
-- One-hot encoded `ocean_proximity`.
-
-### 4. Feature Engineering
-- Added:
-  - `bedroom_ratio` = total_bedrooms / total_rooms
-  - `household_rooms` = total_rooms / households
-
-### 5. Model Training
-- **Linear Regression:**
-  - Standardized features with `StandardScaler`.
-  - Evaluated on test data.
-- **Random Forest Regressor:**
-  - Optimized using `GridSearchCV` for better performance.
-
----
-
-## Results
-- **Linear Regression:** Basic model.
-- **Random Forest Regressor:** Better accuracy after tuning.
-
----
-
-## Visualizations
-- Heatmaps for feature correlations.
-- Scatterplots to explore geographic price trends.
-- Histograms for feature distributions.
-
----
-
-## Key Insights
-- Proximity to the ocean significantly impacts prices.
-- Log transformations improved feature distributions.
-- Random Forest outperformed Linear Regression.
-
----
-
-## How to Use
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/your_username/housing-price-prediction.git
+More of my work: [portfolio-pied-gamma-88.vercel.app](https://portfolio-pied-gamma-88.vercel.app)
